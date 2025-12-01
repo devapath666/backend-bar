@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int       @id @default(autoincrement())
+  nombre    String
+  email     String    @unique
+  password  String
+  rol       Rol       @default(MOZO)
+  createdAt DateTime  @default(now())
+  
+  comandas  Comanda[]
+}
+
+enum Rol {
+  ADMIN
+  MOZO
+  COCINA
+}
+
+model Mesa {
+  id        Int         @id @default(autoincrement())
+  numero    String      @unique
+  capacidad Int         @default(4)
+  estado    EstadoMesa  @default(DISPONIBLE)
+  createdAt DateTime    @default(now())
+  
+  comandas  Comanda[]
+}
+
+enum EstadoMesa {
+  DISPONIBLE
+  OCUPADA
+  ESPERANDO_PAGO
+}
+
+model Producto {
+  id          Int            @id @default(autoincrement())
+  nombre      String
+  categoria   String
+  precio      Float
+  disponible  Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  
+  items       ComandaItem[]
+}
+
+model Comanda {
+  id        String         @id @default(cuid())
+  mesaId    Int
+  usuarioId Int
+  usuarioEmail String? 
+  estado    EstadoComanda  @default(PENDIENTE)
+  total     Float          @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  
+  mesa      Mesa           @relation(fields: [mesaId], references: [id], onDelete: Cascade)
+  usuario   Usuario        @relation(fields: [usuarioId], references: [id])
+  items     ComandaItem[]
+  
+  @@index([estado])
+  @@index([mesaId])
+}
+
+enum EstadoComanda {
+  PENDIENTE
+  EN_PREPARACION
+  LISTO
+  ENTREGADO
+  PAGADO
+}
+
+model ComandaItem {
+  id            Int      @id @default(autoincrement())
+  comandaId     String
+  productoId    Int
+  cantidad      Int
+  precio        Float
+  observaciones String?
+  
+  comanda       Comanda  @relation(fields: [comandaId], references: [id], onDelete: Cascade)
+  producto      Producto @relation(fields: [productoId], references: [id])
+}
