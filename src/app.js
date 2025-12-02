@@ -23,7 +23,7 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.json({
     status: 'OK',
-    message: 'Backend funcionando en Railway 🚀'
+    message: 'Backend funcionando en Render 🚀'
   });
 });
 
