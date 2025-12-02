@@ -8,7 +8,7 @@ const httpServer = createServer(app);
 // Configurar Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: "*",    // 🔥 permite conexiones desde cualquier origen
     credentials: true
   }
 });
@@ -26,6 +26,6 @@ io.on('connection', (socket) => {
 app.set('io', io);
 
 httpServer.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   console.log(`📡 WebSocket habilitado`);
 });
